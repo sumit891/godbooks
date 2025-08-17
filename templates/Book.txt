@@ -1,0 +1,14 @@
+<!-- In your book display section -->
+<div class="book">
+  {% if book.cover_url %}
+    <a href="{{ book.download_url }}" target="_blank">
+      <img src="{{ book.cover_url }}" alt="cover">
+    </a>
+  {% else %}
+    <a href="{{ book.download_url }}" target="_blank">
+      <div style="height:130px; background:#444; border-radius:6px;">No Image</div>
+    </a>
+  {% endif %}
+  <a href="{{ book.download_url }}" target="_blank">⬇️ Download</a>
+  <p class="book-title">{{ book.name }}</p>
+</div>
