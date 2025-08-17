@@ -2,20 +2,20 @@ from flask import Flask, render_template, request, redirect, flash, session, Res
 import os, json, requests, datetime
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your_default_secret')
+app.secret_key = "super_secret_key"
 
 BASE_FOLDER = 'uploads'
 CATEGORIES = ['jee', 'neet']
 ALLOWED_DOC_EXTENSIONS = {'pdf'}
 ALLOWED_IMG_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
+ADMIN_PASSWORD = "admin123"
 
 BOOKS_FILE = "books.json"
 app.config['MAX_CONTENT_LENGTH'] = 300 * 1024 * 1024
 
-# 🔑 Archive.org credentials (env variables)
-ARCHIVE_EMAIL = os.environ.get("ARCHIVE_EMAIL", "your_email")
-ARCHIVE_PASSWORD = os.environ.get("ARCHIVE_PASSWORD", "your_password")
+# 🔑 Internet Archive S3 Keys (आपके दिए हुए)
+ARCHIVE_ACCESS_KEY = "60QpJ1cMwMfWusNv"
+ARCHIVE_SECRET_KEY = "UQi7qlY7cJLc7Hdl"
 
 # Ensure uploads folder exists
 os.makedirs(BASE_FOLDER, exist_ok=True)
@@ -40,16 +40,13 @@ def allowed_file(filename, types):
 
 # ✅ Upload file to Internet Archive
 def upload_to_archive(file, category):
-    # Unique item ID (required by archive.org)
     item_id = f"{category}_{int(datetime.datetime.utcnow().timestamp())}"
-
     url = f"https://s3.us.archive.org/{item_id}/{file.filename}"
 
-    # PUT request with file data
     r = requests.put(
         url,
         data=file.stream,
-        auth=(ARCHIVE_EMAIL, ARCHIVE_PASSWORD),
+        auth=(ARCHIVE_ACCESS_KEY, ARCHIVE_SECRET_KEY),
         headers={"x-archive-auto-make-bucket": "1"}
     )
 
