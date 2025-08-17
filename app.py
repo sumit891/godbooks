@@ -82,7 +82,7 @@ def upload_file():
 
     if doc and allowed_file(doc.filename, ALLOWED_DOC_EXTENSIONS):
         try:
-            # ✅ Correct GoFile endpoint
+            # ✅ Upload to GoFile
             r = requests.post("https://upload.gofile.io/uploadfile", files={"file": (doc.filename, doc)})
             print("GoFile RAW RESPONSE:", r.text)  # Debug log
 
@@ -90,10 +90,10 @@ def upload_file():
             if res.get("status") == "ok":
                 gofile_data = res["data"]
 
+                # Try to get directLink, otherwise fallback to downloadPage
                 direct_link = gofile_data.get("directLink")
                 if not direct_link:
-                    flash("❌ Failed to fetch direct file link")
-                    return redirect('/')
+                    direct_link = gofile_data.get("downloadPage")
 
                 file_record = {
                     "file": doc.filename,
