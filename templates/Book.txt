@@ -4,92 +4,505 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STUDYRNA - BOOKS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
   <style>
-    body {background: linear-gradient(to right, #0f2027, #203a43, #2c5364);font-family: 'Segoe UI', sans-serif;color: white;margin: 0;}
-    header {padding: 1rem 2rem;background-color: rgba(255, 255, 255, 0.1);display: flex;justify-content: space-between;align-items: center;backdrop-filter: blur(5px);}
-    nav a {color: white;margin-left: 1rem;text-decoration: none;}
-    .shelf {padding: 2rem;}
-    .shelf-title {font-size: 1.5rem;color: #00e0ff;margin-bottom: 1rem;}
-    .book-row {display: flex;gap: 1rem;flex-wrap: wrap;}
-    .book {width: 120px;background: #1a1a1a;border: 2px solid #00e0ff;border-radius: 10px;padding: 5px;text-align: center;}
-    .book img {width: 100%;height: 130px;object-fit: cover;border-radius: 6px;}
-    .book a {display: block;color: #00e0ff;margin-top: 5px;font-size: 0.8rem;text-decoration: none;}
-    .upload-form {padding: 2rem;}
-    .search-bar {text-align: center;margin-top: 1rem;}
-    .footer {padding: 2rem;text-align: center;background: rgba(255, 255, 255, 0.1);color: #aaa;}
-    .footer a {color: #00e0ff;text-decoration: none;}
+    :root {
+      --primary: #00e0ff;
+      --secondary: #4CAF50;
+      --dark: #0f2027;
+      --darker: #0a161a;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      margin: 0;
+      background: var(--darker);
+      overflow-x: hidden;
+    }
+    
+    #welcome-section {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    
+    .welcome-text {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, #00e0ff, #4CAF50);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(0, 224, 255, 0.3);
+    }
+    
+    .typed-text {
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 2rem;
+    }
+    
+    .enter-btn {
+      padding: 12px 30px;
+      border-radius: 50px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: #111;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px rgba(0, 224, 255, 0.3);
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    
+    .enter-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(0, 224, 255, 0.4);
+    }
+    
+    header {
+      padding: 1rem 2rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(5px);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+    }
+    
+    nav a {
+      color: white;
+      margin-left: 1.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    nav a:hover {
+      color: var(--primary);
+    }
+    
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -5px;
+      left: 0;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+    
+    nav a:hover::after {
+      width: 100%;
+    }
+    
+    .main-content {
+      margin-top: 80px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .search-bar {
+      text-align: center;
+      margin: 2rem auto;
+      max-width: 800px;
+      padding: 0 1rem;
+    }
+    
+    .search-bar input {
+      padding: 12px 20px;
+      border-radius: 50px;
+      border: none;
+      outline: none;
+      width: 100%;
+      max-width: 500px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 1rem;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .search-bar input:focus {
+      background: rgba(255,255,255,0.2);
+      box-shadow: 0 5px 20px rgba(0, 224, 255, 0.3);
+    }
+    
+    .shelf {
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .shelf-title {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .shelf-title::after {
+      content: '';
+      position: absolute;
+      width: 50%;
+      height: 3px;
+      bottom: -5px;
+      left: 0;
+      background: linear-gradient(90deg, var(--primary), transparent);
+      border-radius: 3px;
+    }
+    
+    .book-row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .book {
+      width: 180px;
+      background: rgba(30, 30, 30, 0.7);
+      border: 2px solid rgba(0, 224, 255, 0.3);
+      border-radius: 15px;
+      padding: 15px;
+      text-align: center;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    
+    .book:hover {
+      transform: translateY(-10px);
+      border-color: var(--primary);
+      box-shadow: 0 15px 30px rgba(0, 224, 255, 0.2);
+    }
+    
+    .book img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .btn {
+      display: block;
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-view {
+      background: var(--primary);
+      color: #111;
+    }
+    
+    .btn-view:hover {
+      background: #00b8d4;
+    }
+    
+    .btn-download {
+      background: var(--secondary);
+      color: white;
+    }
+    
+    .btn-download:hover {
+      background: #3a923f;
+    }
+    
+    .upload-form {
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(30, 30, 30, 0.7);
+      border-radius: 15px;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .upload-form label {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--primary);
+      font-weight: 500;
+    }
+    
+    .upload-form select, 
+    .upload-form input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      background: rgba(20, 20, 20, 0.7);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: white;
+    }
+    
+    .upload-form button {
+      background: var(--primary);
+      color: #111;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .upload-form button:hover {
+      background: #00b8d4;
+      transform: translateY(-2px);
+    }
+    
+    .footer {
+      padding: 2rem;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      color: #aaa;
+      margin-top: 3rem;
+      backdrop-filter: blur(5px);
+    }
+    
+    .footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .floating-books {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      opacity: 0.7;
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .book {
+        width: 150px;
+      }
+      
+      nav a {
+        margin-left: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .book {
+        width: 130px;
+      }
+      
+      header {
+        flex-direction: column;
+        padding: 1rem;
+      }
+      
+      nav {
+        margin-top: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>📚 Study with RNA</h1>
-    <nav>
-      <a href="/">Home</a>
-      <a href="https://t.me/TEAM_RNA" target="_blank">📢 Telegram</a>
-      {% if is_admin %}
-        <a href="/logout">Logout</a>
-      {% else %}
-        <a href="/admin">Admin</a>
-      {% endif %}
-    </nav>
-  </header>
-
-  <div class="search-bar">
-    <form method="get" action="/">
-      <input type="text" name="q" placeholder="🔍 Search book..." value="{{ query }}" />
-    </form>
+  <div id="canvas-container"></div>
+  
+  <div id="welcome-section">
+    <h1 class="welcome-text">RNA TEAM</h1>
+    <div class="typed-text">Welcome to our digital library</div>
+    <button class="enter-btn" id="enter-btn">Explore Books</button>
   </div>
-
-  {% if is_admin %}
-  <section class="upload-form">
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <label>Upload Book:</label><br><br>
-      <select name="category" required>
-        <option value="">-- Select Category --</option>
-        <option value="jee">JEE</option>
-        <option value="neet">NEET</option>
-      </select><br><br>
-      <input type="file" name="book" required><br><br>
-      <input type="file" name="cover" accept="image/*"><br><br>
-      <button type="submit">Upload</button>
-    </form>
-  </section>
-  {% endif %}
-
-  {% for category, books in files.items() %}
-  <section class="shelf">
-    <div class="shelf-title">{{ category.upper() }} Books</div>
-    <div class="book-row">
-      {% for book in books %}
-      <div class="book">
-        {% if book.image %}
-          <a href="{{ url_for('view_file', category=category, filename=book.file) }}" target="_blank">
-            <img src="{{ url_for('serve_image', category=category, filename=book.image) }}" alt="cover">
-          </a>
+  
+  <div class="main-content" style="display:none;">
+    <header>
+      <h1>📚 Study with RNA</h1>
+      <nav>
+        <a href="/">Home</a>
+        <a href="https://t.me/TEAM_RNA" target="_blank">📢 Telegram</a>
+        {% if is_admin %}
+          <a href="/logout">Logout</a>
         {% else %}
-          <a href="{{ url_for('view_file', category=category, filename=book.file) }}" target="_blank">
-            <div style="height:130px; background:#444; border-radius:6px;">No Image</div>
-          </a>
+          <a href="/admin">Admin</a>
         {% endif %}
-        <a href="{{ url_for('view_file', category=category, filename=book.file) }}" target="_blank">👁 View</a>
-        <a href="{{ url_for('download_file', category=category, filename=book.file) }}">⬇️ Download</a>
-      </div>
-      {% endfor %}
+      </nav>
+    </header>
+
+    <div class="search-bar">
+      <form method="get" action="/">
+        <input type="text" name="q" placeholder="🔍 Search book..." value="{{ query }}" />
+      </form>
     </div>
-  </section>
-  {% endfor %}
 
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <p style="text-align:center; color:lightgreen;">{{ messages[0] }}</p>
+    {% if is_admin %}
+    <section class="upload-form">
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <label>Upload Book:</label>
+        <select name="category" required>
+          <option value="">-- Select Category --</option>
+          <option value="jee">JEE</option>
+          <option value="neet">NEET</option>
+        </select>
+        <input type="file" name="book" required>
+        <input type="file" name="cover" accept="image/*">
+        <button type="submit">Upload</button>
+      </form>
+    </section>
     {% endif %}
-  {% endwith %}
 
-  <div class="footer">
-    © 2025 Study with RNA | All rights reserved.<br>
-    👩‍💻 MADE BY SUMIT KUMAWAT ❤❤<br>
-    📢 Join our Telegram: 
-    <a href="https://t.me/TEAM_RNA" target="_blank">@TEAM_RNA</a>
+    {% for category, books in files.items() %}
+    <section class="shelf">
+      <div class="shelf-title">{{ category.upper() }} Books ({{ books|length }})</div>
+      <div class="book-row">
+        {% for book in books %}
+        <div class="book">
+          {% if book.image %}
+            <a href="{{ url_for('view_file', category=category, filename=book.file) }}" target="_blank">
+              <img src="{{ url_for('serve_image', category=category, filename=book.image) }}" alt="cover">
+            </a>
+          {% else %}
+            <a href="{{ url_for('view_file', category=category, filename=book.file) }}" target="_blank">
+              <div style="height:200px; background:#444; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#aaa;">No Image</div>
+            </a>
+          {% endif %}
+          <a class="btn btn-view" href="{{ url_for('view_file', category=category, filename=book.file) }}" target="_blank">👁 View</a>
+          <a class="btn btn-download" href="{{ url_for('download_file', category=category, filename=book.file) }}">⬇️ Download</a>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <p style="text-align:center; color:lightgreen; padding:1rem; background:rgba(0,0,0,0.3); border-radius:8px; max-width:500px; margin:2rem auto;">{{ messages[0] }}</p>
+      {% endif %}
+    {% endwith %}
+
+    <div class="footer">
+      © 2025 Study with RNA | All rights reserved.<br>
+      👩‍💻 MADE BY SUMIT KUMAWAT ❤❤<br>
+      📢 Join our Telegram: 
+      <a href="https://t.me/TEAM_RNA" target="_blank">@TEAM_RNA</a>
+    </div>
   </div>
+
+  <script>
+    // 3D Background Animation
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    // Create floating particles
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particleCount = 500;
+    
+    const posArray = new Float32Array(particleCount * 3);
+    for(let i = 0; i < particleCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 10;
+    }
+    
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.02,
+      color: 0x00e0ff,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending
+    });
+    
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+
+    camera.position.z = 3;
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      particlesMesh.rotation.x += 0.0005;
+      particlesMesh.rotation.y += 0.0005;
+      
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Typed.js animation
+    document.addEventListener('DOMContentLoaded', function() {
+      const typed = new Typed('.typed-text', {
+        strings: ['RNA TEAM WELCOMES YOU', 'Explore our collection of books', 'Knowledge for everyone'],
+        typeSpeed: 50,
+        backSpeed: 30,
+        loop: true
+      });
+      
+      // Enter button functionality
+      document.getElementById('enter-btn').addEventListener('click', function() {
+        document.getElementById('welcome-section').style.display = 'none';
+        document.querySelector('.main-content').style.display = 'block';
+        
+        // Smooth scroll to top
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
 </body>
 </html>
