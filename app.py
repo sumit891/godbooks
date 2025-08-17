@@ -1,17 +1,21 @@
-from flask import Flask, render_template, request, redirect, flash, url_for, session, Response
-import os, json, requests
+from flask import Flask, render_template, request, redirect, flash, session, Response
+import os, json, requests, datetime
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your_default_secret')
 
 BASE_FOLDER = 'uploads'
 CATEGORIES = ['jee', 'neet']
-ALLOWED_DOC_EXTENSIONS = {'pdf', 'epub', 'txt', 'doc', 'docx'}
+ALLOWED_DOC_EXTENSIONS = {'pdf'}
 ALLOWED_IMG_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 
 BOOKS_FILE = "books.json"
 app.config['MAX_CONTENT_LENGTH'] = 300 * 1024 * 1024
+
+# 🔑 Archive.org credentials (env variables)
+ARCHIVE_EMAIL = os.environ.get("ARCHIVE_EMAIL", "your_email")
+ARCHIVE_PASSWORD = os.environ.get("ARCHIVE_PASSWORD", "your_password")
 
 # Ensure uploads folder exists
 os.makedirs(BASE_FOLDER, exist_ok=True)
@@ -33,6 +37,28 @@ books_data = load_books()
 
 def allowed_file(filename, types):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in types
+
+# ✅ Upload file to Internet Archive
+def upload_to_archive(file, category):
+    # Unique item ID (required by archive.org)
+    item_id = f"{category}_{int(datetime.datetime.utcnow().timestamp())}"
+
+    url = f"https://s3.us.archive.org/{item_id}/{file.filename}"
+
+    # PUT request with file data
+    r = requests.put(
+        url,
+        data=file.stream,
+        auth=(ARCHIVE_EMAIL, ARCHIVE_PASSWORD),
+        headers={"x-archive-auto-make-bucket": "1"}
+    )
+
+    if r.status_code not in (200, 201):
+        raise Exception(f"Archive upload failed: {r.text}")
+
+    # Direct download/view link
+    link = f"https://archive.org/download/{item_id}/{file.filename}"
+    return link
 
 @app.route('/', methods=['GET'])
 def home():
@@ -82,35 +108,26 @@ def upload_file():
 
     if doc and allowed_file(doc.filename, ALLOWED_DOC_EXTENSIONS):
         try:
-            # ✅ Upload to GoFile (free mode: will return downloadPage)
-            r = requests.post("https://upload.gofile.io/uploadfile", files={"file": (doc.filename, doc)})
-            print("GoFile RAW RESPONSE:", r.text)  # Debug log
+            # ✅ Upload to Archive.org
+            link = upload_to_archive(doc, category)
 
-            res = r.json()
-            if res.get("status") == "ok":
-                gofile_data = res["data"]
+            file_record = {
+                "file": doc.filename,
+                "direct_link": link,
+                "image": None
+            }
 
-                # Free account: only downloadPage is available
-                file_record = {
-                    "file": doc.filename,
-                    "direct_link": gofile_data.get("downloadPage"),
-                    "image": None
-                }
+            # Save cover locally
+            if img and allowed_file(img.filename, ALLOWED_IMG_EXTENSIONS):
+                ext = os.path.splitext(img.filename)[1]
+                imgname = os.path.splitext(doc.filename)[0] + ext
+                img.save(os.path.join(BASE_FOLDER, category, imgname))
+                file_record["image"] = imgname
 
-                # Save cover locally (only small images, PDFs stay on GoFile)
-                if img and allowed_file(img.filename, ALLOWED_IMG_EXTENSIONS):
-                    ext = os.path.splitext(img.filename)[1]
-                    imgname = os.path.splitext(doc.filename)[0] + ext
-                    img.save(os.path.join(BASE_FOLDER, category, imgname))
-                    file_record["image"] = imgname
+            books_data[category].append(file_record)
+            save_books(books_data)
 
-                books_data[category].append(file_record)
-                save_books(books_data)
-
-                flash('✅ Book uploaded successfully!')
-            else:
-                flash('❌ Failed to upload to GoFile')
-
+            flash('✅ Book uploaded successfully!')
         except Exception as e:
             print("Upload error:", str(e))
             flash("❌ Upload error: " + str(e))
@@ -119,7 +136,6 @@ def upload_file():
 
     return redirect('/')
 
-# ✅ Free user: just redirect to GoFile page
 @app.route('/download/<category>/<filename>')
 def download_file(category, filename):
     if category not in CATEGORIES:
@@ -130,7 +146,14 @@ def download_file(category, filename):
             link = book.get("direct_link")
             if not link:
                 return "File link missing in record", 500
-            return redirect(link)
+
+            # ✅ Stream as attachment
+            r = requests.get(link, stream=True)
+            return Response(
+                r.iter_content(chunk_size=8192),
+                content_type="application/pdf",
+                headers={"Content-Disposition": f"attachment; filename={filename}"}
+            )
     return "File not found", 404
 
 @app.route('/view/<category>/<filename>')
@@ -143,7 +166,14 @@ def view_file(category, filename):
             link = book.get("direct_link")
             if not link:
                 return "File link missing in record", 500
-            return redirect(link)
+
+            # ✅ Stream inline (browser open)
+            r = requests.get(link, stream=True)
+            return Response(
+                r.iter_content(chunk_size=8192),
+                content_type="application/pdf",
+                headers={"Content-Disposition": f"inline; filename={filename}"}
+            )
     return "File not found", 404
 
 @app.route('/uploads/<category>/<filename>')
