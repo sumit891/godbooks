@@ -163,15 +163,17 @@ def view_file(category, filename):
                 if not direct_link:
                     return "File link missing in record", 500
 
-                r = requests.get(direct_link, stream=True)
+                r = requests.get(direct_link)
                 if r.status_code != 200:
                     return f"Error fetching file from GoFile (status {r.status_code})", 500
 
+                data = r.content
                 return Response(
-                    r.iter_content(chunk_size=8192),
+                    data,
                     content_type="application/pdf",
                     headers={
-                        "Content-Disposition": f"inline; filename={filename}"
+                        "Content-Disposition": f"inline; filename={filename}",
+                        "Content-Length": str(len(data))
                     }
                 )
             except Exception as e:
