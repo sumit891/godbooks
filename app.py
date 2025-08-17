@@ -90,20 +90,18 @@ def upload_file():
             if res.get("status") == "ok":
                 gofile_data = res["data"]
 
-                # कभी-कभी directLink missing होता है
                 direct_link = gofile_data.get("directLink")
                 if not direct_link:
-                    # fallback to downloadPage (user को लगेगा आपकी site से मिल रहा है)
-                    direct_link = gofile_data.get("downloadPage")
+                    flash("❌ Failed to fetch direct file link")
+                    return redirect('/')
 
                 file_record = {
                     "file": doc.filename,
-                    "gofile_link": gofile_data.get("downloadPage"),
                     "direct_link": direct_link,
                     "image": None
                 }
 
-                # Save cover locally
+                # Save cover locally (only small images, PDFs stay on GoFile)
                 if img and allowed_file(img.filename, ALLOWED_IMG_EXTENSIONS):
                     ext = os.path.splitext(img.filename)[1]
                     imgname = os.path.splitext(doc.filename)[0] + ext
@@ -171,7 +169,7 @@ def view_file(category, filename):
 
                 return Response(
                     r.iter_content(chunk_size=8192),
-                    content_type=r.headers.get("Content-Type", "application/pdf"),
+                    content_type="application/pdf",
                     headers={
                         "Content-Disposition": f"inline; filename={filename}"
                     }
