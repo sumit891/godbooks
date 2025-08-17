@@ -142,7 +142,7 @@ def download_file(category, filename):
 
                 return Response(
                     r.iter_content(chunk_size=8192),
-                    content_type=r.headers.get("Content-Type", "application/pdf"),
+                    content_type="application/pdf",
                     headers={
                         "Content-Disposition": f"attachment; filename={filename}"
                     }
@@ -151,6 +151,7 @@ def download_file(category, filename):
                 return f"Error fetching file: {e}", 500
     return "File not found", 404
 
+# ✅ FIXED: Stream large PDF in browser without memory issue
 @app.route('/view/<category>/<filename>')
 def view_file(category, filename):
     if category not in CATEGORIES:
@@ -163,17 +164,15 @@ def view_file(category, filename):
                 if not direct_link:
                     return "File link missing in record", 500
 
-                r = requests.get(direct_link)
+                r = requests.get(direct_link, stream=True)
                 if r.status_code != 200:
                     return f"Error fetching file from GoFile (status {r.status_code})", 500
 
-                data = r.content
                 return Response(
-                    data,
+                    r.iter_content(chunk_size=8192),
                     content_type="application/pdf",
                     headers={
-                        "Content-Disposition": f"inline; filename={filename}",
-                        "Content-Length": str(len(data))
+                        "Content-Disposition": f"inline; filename={filename}"
                     }
                 )
             except Exception as e:
