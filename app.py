@@ -82,7 +82,7 @@ def upload_file():
 
     if doc and allowed_file(doc.filename, ALLOWED_DOC_EXTENSIONS):
         try:
-            # ✅ Upload to GoFile
+            # ✅ Upload to GoFile (free mode: will return downloadPage)
             r = requests.post("https://upload.gofile.io/uploadfile", files={"file": (doc.filename, doc)})
             print("GoFile RAW RESPONSE:", r.text)  # Debug log
 
@@ -90,14 +90,10 @@ def upload_file():
             if res.get("status") == "ok":
                 gofile_data = res["data"]
 
-                # Try to get directLink, otherwise fallback to downloadPage
-                direct_link = gofile_data.get("directLink")
-                if not direct_link:
-                    direct_link = gofile_data.get("downloadPage")
-
+                # Free account: only downloadPage is available
                 file_record = {
                     "file": doc.filename,
-                    "direct_link": direct_link,
+                    "direct_link": gofile_data.get("downloadPage"),
                     "image": None
                 }
 
@@ -123,35 +119,20 @@ def upload_file():
 
     return redirect('/')
 
+# ✅ Free user: just redirect to GoFile page
 @app.route('/download/<category>/<filename>')
 def download_file(category, filename):
     if category not in CATEGORIES:
         return "Invalid category", 404
 
-    # Find file in books.json
     for book in books_data.get(category, []):
         if book["file"] == filename:
-            try:
-                direct_link = book.get("direct_link")
-                if not direct_link:
-                    return "File link missing in record", 500
-
-                r = requests.get(direct_link, stream=True)
-                if r.status_code != 200:
-                    return f"Error fetching file from GoFile (status {r.status_code})", 500
-
-                return Response(
-                    r.iter_content(chunk_size=8192),
-                    content_type="application/pdf",
-                    headers={
-                        "Content-Disposition": f"attachment; filename={filename}"
-                    }
-                )
-            except Exception as e:
-                return f"Error fetching file: {e}", 500
+            link = book.get("direct_link")
+            if not link:
+                return "File link missing in record", 500
+            return redirect(link)
     return "File not found", 404
 
-# ✅ FIXED: Stream large PDF in browser without memory issue
 @app.route('/view/<category>/<filename>')
 def view_file(category, filename):
     if category not in CATEGORIES:
@@ -159,24 +140,10 @@ def view_file(category, filename):
 
     for book in books_data.get(category, []):
         if book["file"] == filename:
-            try:
-                direct_link = book.get("direct_link")
-                if not direct_link:
-                    return "File link missing in record", 500
-
-                r = requests.get(direct_link, stream=True)
-                if r.status_code != 200:
-                    return f"Error fetching file from GoFile (status {r.status_code})", 500
-
-                return Response(
-                    r.iter_content(chunk_size=8192),
-                    content_type="application/pdf",
-                    headers={
-                        "Content-Disposition": f"inline; filename={filename}"
-                    }
-                )
-            except Exception as e:
-                return f"Error fetching file: {e}", 500
+            link = book.get("direct_link")
+            if not link:
+                return "File link missing in record", 500
+            return redirect(link)
     return "File not found", 404
 
 @app.route('/uploads/<category>/<filename>')
