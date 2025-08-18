@@ -11,9 +11,9 @@ ALLOWED_IMG_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 ADMIN_PASSWORD = "admin123"
 
 BOOKS_FILE = "books.json"
-app.config['MAX_CONTENT_LENGTH'] = 300 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500 MB max
 
-# 🔑 Archive.org S3 Keys (new)
+# 🔑 Archive.org IAS3 Keys
 ARCHIVE_ACCESS_KEY = "9A0i7CUUjQFnnIGX".strip()
 ARCHIVE_SECRET_KEY = "KPn5ws69o3W0cysa".strip()
 
@@ -48,14 +48,17 @@ def upload_to_archive(file, category):
     headers = {
         "authorization": f"LOW {ARCHIVE_ACCESS_KEY}:{ARCHIVE_SECRET_KEY}",
         "x-archive-auto-make-bucket": "1",
-        "x-archive-meta01-collection": "opensource",   # Recommended collection
-        "x-archive-meta-mediatype": "texts",           # PDFs = texts
+        "x-archive-meta01-collection": "opensource",
+        "x-archive-meta-mediatype": "texts",
+        "x-archive-meta-language": "eng",
+        "x-archive-meta-title": file.filename,
         "Content-Type": "application/pdf"
     }
 
+    # ✅ Read file content (important to avoid corrupt PDF)
     r = requests.put(
         url,
-        data=file.stream,
+        data=file.read(),
         headers=headers
     )
 
@@ -68,6 +71,9 @@ def upload_to_archive(file, category):
     embed_code = f'<iframe src="https://archive.org/embed/{item_id}" width="560" height="384" frameborder="0" allowfullscreen></iframe>'
 
     return direct_link, details_link, embed_code
+
+
+# ========================= Routes ========================= #
 
 @app.route('/', methods=['GET'])
 def home():
@@ -82,6 +88,7 @@ def home():
         categorized_files[category] = filtered_books
     return render_template("Book.html", files=categorized_files, is_admin=session.get('admin') == True, query=query)
 
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -95,11 +102,13 @@ def admin_login():
             return redirect('/admin')
     return render_template("admin_login.html")
 
+
 @app.route('/logout')
 def logout():
     session.pop('admin', None)
     flash("Logged out successfully")
     return redirect('/')
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -147,6 +156,7 @@ def upload_file():
 
     return redirect('/')
 
+
 @app.route('/download/<category>/<filename>')
 def download_file(category, filename):
     if category not in CATEGORIES:
@@ -165,6 +175,7 @@ def download_file(category, filename):
                 headers={"Content-Disposition": f"attachment; filename={filename}"}
             )
     return "File not found", 404
+
 
 @app.route('/view/<category>/<filename>')
 def view_file(category, filename):
@@ -185,12 +196,14 @@ def view_file(category, filename):
             )
     return "File not found", 404
 
+
 @app.route('/uploads/<category>/<filename>')
 def serve_image(category, filename):
     path = os.path.join(BASE_FOLDER, category, filename)
     if os.path.exists(path):
         return Response(open(path, "rb"), content_type="image/*")
     return "Image not found", 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)
