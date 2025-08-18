@@ -521,7 +521,7 @@
       <div class="shelf-title">{{ category.upper() }} Books ({{ books|length }})</div>
       <div class="book-row">
         {% for book in books %}
-        <div class="book floating" style="animation-delay: {{ loop.index0 * 0.2s }}">
+        <div class="book floating" style="animation-delay: {{ loop.index0 * 0.2 }}s">
           {% if book.image %}
             <a href="{{ url_for('view_file', category=category, filename=book.file) }}" target="_blank">
               <img src="{{ url_for('serve_image', category=category, filename=book.image) }}" alt="cover">
