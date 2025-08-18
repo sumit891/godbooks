@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>STUDYRNA - BOOKS</title>
+  <title>STUDY WITH RNA - DIGITAL LIBRARY</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
@@ -13,7 +13,7 @@
       --secondary: #4CAF50;
       --dark: #0f2027;
       --darker: #0a161a;
-      --glow: 0 0 10px rgba(0, 224, 255, 0.7);
+      --glow: 0 0 15px rgba(0, 224, 255, 0.7);
     }
     
     * {
@@ -52,14 +52,15 @@
     }
     
     .welcome-text {
-      font-size: clamp(2rem, 5vw, 4rem);
+      font-size: clamp(2rem, 6vw, 5rem);
       font-weight: 700;
       margin-bottom: 1rem;
       background: linear-gradient(90deg, #00e0ff, #4CAF50);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 20px rgba(0, 224, 255, 0.5);
+      text-shadow: var(--glow);
       animation: glow 2s infinite alternate;
+      line-height: 1.2;
     }
     
     @keyframes glow {
@@ -71,6 +72,14 @@
       }
     }
     
+    .welcome-subtext {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: white;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+    
     .typed-text {
       font-size: clamp(1rem, 3vw, 1.5rem);
       color: rgba(255,255,255,0.9);
@@ -79,17 +88,17 @@
     }
     
     .enter-btn {
-      padding: 12px 30px;
+      padding: 15px 40px;
       border-radius: 50px;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       color: #111;
       font-weight: 600;
       text-decoration: none;
       transition: all 0.3s ease;
-      box-shadow: 0 10px 20px rgba(0, 224, 255, 0.4), 0 0 15px rgba(0, 224, 255, 0.3);
+      box-shadow: 0 10px 25px rgba(0, 224, 255, 0.4), 0 0 15px rgba(0, 224, 255, 0.3);
       border: none;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 1.1rem;
       position: relative;
       overflow: hidden;
       z-index: 1;
@@ -102,14 +111,14 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
       transition: 0.5s;
       z-index: -1;
     }
     
     .enter-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 30px rgba(0, 224, 255, 0.5), 0 0 25px rgba(0, 224, 255, 0.4);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 224, 255, 0.5), 0 0 25px rgba(0, 224, 255, 0.4);
     }
     
     .enter-btn:hover::before {
@@ -118,23 +127,32 @@
     
     header {
       padding: 1rem 2rem;
-      background-color: rgba(15, 32, 39, 0.8);
+      background-color: rgba(15, 32, 39, 0.9);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       position: fixed;
       width: 100%;
       top: 0;
       z-index: 100;
-      box-shadow: 0 5px 30px rgba(0,0,0,0.3);
-      border-bottom: 1px solid rgba(0, 224, 255, 0.2);
+      box-shadow: 0 5px 35px rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(0, 224, 255, 0.3);
       transition: all 0.3s ease;
     }
     
     header:hover {
-      background-color: rgba(15, 32, 39, 0.9);
-      box-shadow: 0 5px 40px rgba(0, 224, 255, 0.2);
+      background-color: rgba(15, 32, 39, 0.95);
+      box-shadow: 0 5px 40px rgba(0, 224, 255, 0.3);
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 10px rgba(0, 224, 255, 0.3);
     }
     
     nav a {
@@ -188,25 +206,25 @@
     }
     
     .search-bar input {
-      padding: 12px 20px;
+      padding: 14px 25px;
       border-radius: 50px;
       border: none;
       outline: none;
       width: 100%;
-      max-width: 500px;
+      max-width: 600px;
       background: rgba(255,255,255,0.1);
       color: white;
-      font-size: 1rem;
-      backdrop-filter: blur(5px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      font-size: 1.1rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
       transition: all 0.3s ease;
-      border: 1px solid rgba(0, 224, 255, 0.2);
+      border: 1px solid rgba(0, 224, 255, 0.3);
     }
     
     .search-bar input:focus {
-      background: rgba(255,255,255,0.2);
-      box-shadow: 0 5px 20px rgba(0, 224, 255, 0.4);
-      border: 1px solid rgba(0, 224, 255, 0.4);
+      background: rgba(255,255,255,0.15);
+      box-shadow: 0 5px 25px rgba(0, 224, 255, 0.4);
+      border: 1px solid rgba(0, 224, 255, 0.5);
     }
     
     .shelf {
@@ -216,21 +234,21 @@
     }
     
     .shelf-title {
-      font-size: 1.8rem;
+      font-size: 2rem;
       color: var(--primary);
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       font-weight: 600;
       position: relative;
       display: inline-block;
-      text-shadow: 0 0 10px rgba(0, 224, 255, 0.3);
+      text-shadow: 0 0 15px rgba(0, 224, 255, 0.4);
     }
     
     .shelf-title::after {
       content: '';
       position: absolute;
       width: 50%;
-      height: 3px;
-      bottom: -5px;
+      height: 4px;
+      bottom: -8px;
       left: 0;
       background: linear-gradient(90deg, var(--primary), transparent);
       border-radius: 3px;
@@ -238,21 +256,21 @@
     
     .book-row {
       display: flex;
-      gap: 1.5rem;
+      gap: 2rem;
       flex-wrap: wrap;
       justify-content: center;
     }
     
     .book {
-      width: 180px;
-      background: rgba(30, 30, 30, 0.8);
-      border: 2px solid rgba(0, 224, 255, 0.3);
+      width: 200px;
+      background: rgba(30, 30, 30, 0.85);
+      border: 2px solid rgba(0, 224, 255, 0.4);
       border-radius: 15px;
-      padding: 15px;
+      padding: 20px;
       text-align: center;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(8px);
       transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.4);
       position: relative;
       overflow: hidden;
     }
@@ -271,36 +289,36 @@
     }
     
     .book:hover {
-      transform: translateY(-10px) scale(1.03);
+      transform: translateY(-12px) scale(1.05);
       border-color: var(--primary);
-      box-shadow: 0 15px 30px rgba(0, 224, 255, 0.3), 0 0 20px rgba(0, 224, 255, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 224, 255, 0.3), 0 0 25px rgba(0, 224, 255, 0.2);
     }
     
     .book:hover::before {
-      opacity: 0.3;
+      opacity: 0.4;
     }
     
     .book img {
       width: 100%;
-      height: 200px;
+      height: 220px;
       object-fit: cover;
       border-radius: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+      margin-bottom: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
       transition: all 0.3s ease;
     }
     
     .book:hover img {
-      transform: scale(1.02);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      transform: scale(1.03);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
     }
     
     .btn {
       display: block;
-      margin-top: 10px;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 0.9rem;
+      margin-top: 12px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 1rem;
       text-decoration: none;
       font-weight: 600;
       transition: all 0.3s ease;
@@ -311,97 +329,98 @@
     .btn-view {
       background: var(--primary);
       color: #111;
-      box-shadow: 0 4px 10px rgba(0, 224, 255, 0.3);
+      box-shadow: 0 5px 15px rgba(0, 224, 255, 0.4);
     }
     
     .btn-view:hover {
       background: #00b8d4;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(0, 224, 255, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 224, 255, 0.5);
     }
     
     .btn-download {
       background: var(--secondary);
       color: white;
-      box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
     }
     
     .btn-download:hover {
       background: #3a923f;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.5);
     }
     
     .upload-form {
-      padding: 2rem;
+      padding: 2.5rem;
       max-width: 800px;
       margin: 0 auto;
-      background: rgba(30, 30, 30, 0.8);
+      background: rgba(30, 30, 30, 0.85);
       border-radius: 15px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      border: 1px solid rgba(0, 224, 255, 0.2);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+      border: 1px solid rgba(0, 224, 255, 0.3);
       transition: all 0.3s ease;
     }
     
     .upload-form:hover {
-      box-shadow: 0 15px 40px rgba(0, 224, 255, 0.2);
-      border: 1px solid rgba(0, 224, 255, 0.4);
+      box-shadow: 0 20px 50px rgba(0, 224, 255, 0.3);
+      border: 1px solid rgba(0, 224, 255, 0.5);
     }
     
     .upload-form label {
       display: block;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       color: var(--primary);
       font-weight: 500;
-      text-shadow: 0 0 5px rgba(0, 224, 255, 0.3);
+      text-shadow: 0 0 8px rgba(0, 224, 255, 0.4);
     }
     
     .upload-form select, 
     .upload-form input[type="file"] {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
+      padding: 14px;
+      margin-bottom: 18px;
       border-radius: 8px;
-      background: rgba(20, 20, 20, 0.8);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(20, 20, 20, 0.85);
+      border: 1px solid rgba(255,255,255,0.15);
       color: white;
       transition: all 0.3s ease;
+      font-size: 1rem;
     }
     
     .upload-form select:focus, 
     .upload-form input[type="file"]:focus {
       border: 1px solid var(--primary);
-      box-shadow: 0 0 10px rgba(0, 224, 255, 0.3);
+      box-shadow: 0 0 15px rgba(0, 224, 255, 0.4);
     }
     
     .upload-form button {
       background: var(--primary);
       color: #111;
       border: none;
-      padding: 12px 25px;
+      padding: 14px 30px;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 224, 255, 0.3);
+      box-shadow: 0 5px 20px rgba(0, 224, 255, 0.4);
     }
     
     .upload-form button:hover {
       background: #00b8d4;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 224, 255, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 224, 255, 0.5);
     }
     
     .footer {
-      padding: 2rem;
+      padding: 3rem;
       text-align: center;
-      background: rgba(15, 32, 39, 0.8);
+      background: rgba(15, 32, 39, 0.9);
       color: #aaa;
-      margin-top: 3rem;
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(0, 224, 255, 0.2);
+      margin-top: 4rem;
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 224, 255, 0.3);
     }
     
     .footer a {
@@ -414,15 +433,15 @@
     
     .footer a:hover {
       color: white;
-      text-shadow: 0 0 10px rgba(0, 224, 255, 0.5);
+      text-shadow: 0 0 15px rgba(0, 224, 255, 0.6);
     }
     
     .footer a::after {
       content: '';
       position: absolute;
       width: 0;
-      height: 1px;
-      bottom: -2px;
+      height: 2px;
+      bottom: -3px;
       left: 0;
       background: var(--primary);
       transition: width 0.3s ease;
@@ -432,49 +451,16 @@
       width: 100%;
     }
     
-    /* Floating animation for books */
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-15px) rotate(3deg); }
+    .footer-text {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
     }
     
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .book {
-        width: 160px;
-      }
-      
-      nav a {
-        margin-left: 1rem;
-        font-size: 0.9rem;
-      }
-      
-      header {
-        padding: 0.8rem 1rem;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .book {
-        width: 140px;
-      }
-      
-      header {
-        flex-direction: column;
-        padding: 0.8rem;
-      }
-      
-      nav {
-        margin-top: 0.8rem;
-      }
-      
-      nav a {
-        margin: 0 0.5rem;
-      }
-      
-      .shelf {
-        padding: 1rem;
-      }
+    .creator {
+      font-size: 1.2rem;
+      margin: 1rem 0;
+      color: var(--primary);
+      text-shadow: 0 0 10px rgba(0, 224, 255, 0.4);
     }
     
     /* Preloader */
@@ -498,16 +484,79 @@
     }
     
     .loader {
-      width: 50px;
-      height: 50px;
-      border: 3px solid rgba(0, 224, 255, 0.3);
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(0, 224, 255, 0.3);
       border-radius: 50%;
       border-top-color: var(--primary);
       animation: spin 1s ease-in-out infinite;
+      box-shadow: 0 0 15px rgba(0, 224, 255, 0.3);
     }
     
     @keyframes spin {
       to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+      .book {
+        width: 180px;
+      }
+      
+      .book-row {
+        gap: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .book {
+        width: 160px;
+        padding: 15px;
+      }
+      
+      .book img {
+        height: 200px;
+      }
+      
+      nav a {
+        margin-left: 1rem;
+        font-size: 0.9rem;
+      }
+      
+      header {
+        padding: 0.8rem 1.5rem;
+      }
+      
+      .shelf-title {
+        font-size: 1.8rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .book {
+        width: 140px;
+      }
+      
+      header {
+        flex-direction: column;
+        padding: 0.8rem;
+      }
+      
+      nav {
+        margin-top: 0.8rem;
+      }
+      
+      nav a {
+        margin: 0 0.5rem;
+      }
+      
+      .shelf {
+        padding: 1.5rem;
+      }
+      
+      .footer {
+        padding: 2rem 1rem;
+      }
     }
   </style>
 </head>
@@ -519,14 +568,15 @@
   <div id="canvas-container"></div>
   
   <div id="welcome-section">
-    <h1 class="welcome-text">RNA TEAM</h1>
-    <div class="typed-text">Welcome to our digital library</div>
+    <h1 class="welcome-text">STUDY WITH RNA</h1>
+    <div class="welcome-subtext">DIGITAL LIBRARY</div>
+    <div class="typed-text">Your gateway to knowledge</div>
     <button class="enter-btn" id="enter-btn">Explore Books</button>
   </div>
   
   <div class="main-content">
     <header>
-      <h1>📚 Study with RNA</h1>
+      <div class="logo">STUDY WITH RNA</div>
       <nav>
         <a href="/">Home</a>
         <a href="https://t.me/TEAM_RNA" target="_blank">📢 Telegram</a>
@@ -572,7 +622,7 @@
             </a>
           {% else %}
             <a href="{{ url_for('view_file', category=category, filename=book.file) }}" target="_blank">
-              <div style="height:200px; background:#444; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#aaa;">No Image</div>
+              <div style="height:220px; background:#444; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#aaa;">No Image</div>
             </a>
           {% endif %}
           <a class="btn btn-view" href="{{ url_for('view_file', category=category, filename=book.file) }}" target="_blank">👁 View</a>
@@ -585,15 +635,16 @@
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <p style="text-align:center; color:lightgreen; padding:1rem; background:rgba(0,0,0,0.3); border-radius:8px; max-width:500px; margin:2rem auto;">{{ messages[0] }}</p>
+        <p style="text-align:center; color:lightgreen; padding:1.5rem; background:rgba(0,0,0,0.4); border-radius:10px; max-width:600px; margin:2rem auto; box-shadow:0 5px 15px rgba(0,0,0,0.2);">{{ messages[0] }}</p>
       {% endif %}
     {% endwith %}
 
     <div class="footer">
-      © 2025 Study with RNA | All rights reserved.<br>
-      👩‍💻 MADE BY SUMIT KUMAWAT ❤❤<br>
-      📢 Join our Telegram: 
-      <a href="https://t.me/TEAM_RNA" target="_blank">@TEAM_RNA</a>
+      <div class="footer-text">© 2025 STUDY WITH RNA | All rights reserved.</div>
+      <div class="creator">👩‍💻 MADE BY SUMIT KUMAWAT ❤❤</div>
+      <div>📢 Join our Telegram: 
+        <a href="https://t.me/TEAM_RNA" target="_blank">@TEAM_RNA</a>
+      </div>
     </div>
   </div>
 
@@ -603,7 +654,7 @@
       const preloader = document.querySelector('.preloader');
       setTimeout(() => {
         preloader.classList.add('fade-out');
-      }, 1000);
+      }, 1200);
     });
 
     // Enhanced 3D Background Animation
@@ -620,13 +671,14 @@
 
     // Create floating particles with different colors
     const particlesGeometry = new THREE.BufferGeometry();
-    const particleCount = 1000;
+    const particleCount = 1200;
     
     const posArray = new Float32Array(particleCount * 3);
     const colorArray = new Float32Array(particleCount * 3);
+    const sizeArray = new Float32Array(particleCount);
     
     for(let i = 0; i < particleCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 10;
+      posArray[i] = (Math.random() - 0.5) * 15;
       
       // Assign colors - mix of blue and green particles
       if(i % 3 === 0) {
@@ -638,16 +690,22 @@
         colorArray[i+1] = Math.random() * 0.5 + 0.5; // G (0.5-1.0)
         colorArray[i+2] = Math.random() * 0.2; // B (0-0.2)
       }
+      
+      // Random sizes
+      if(i % 3 === 0) {
+        sizeArray[i/3] = Math.random() * 0.04 + 0.01;
+      }
     }
     
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+    particlesGeometry.setAttribute('size', new THREE.BufferAttribute(sizeArray, 1));
     
     const particlesMaterial = new THREE.PointsMaterial({
       size: 0.03,
       vertexColors: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.9,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true
     });
@@ -657,20 +715,20 @@
 
     // Add some larger particles for depth
     const bigParticlesGeometry = new THREE.BufferGeometry();
-    const bigParticleCount = 30;
+    const bigParticleCount = 40;
     
     const bigPosArray = new Float32Array(bigParticleCount * 3);
     for(let i = 0; i < bigParticleCount * 3; i++) {
-      bigPosArray[i] = (Math.random() - 0.5) * 15;
+      bigPosArray[i] = (Math.random() - 0.5) * 20;
     }
     
     bigParticlesGeometry.setAttribute('position', new THREE.BufferAttribute(bigPosArray, 3));
     
     const bigParticlesMaterial = new THREE.PointsMaterial({
-      size: 0.2,
+      size: 0.25,
       color: 0x00e0ff,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.7,
       blending: THREE.AdditiveBlending
     });
     
@@ -683,11 +741,11 @@
     function animate() {
       requestAnimationFrame(animate);
       
-      particlesMesh.rotation.x += 0.0003;
-      particlesMesh.rotation.y += 0.0004;
-      particlesMesh.rotation.z += 0.0002;
+      particlesMesh.rotation.x += 0.0002;
+      particlesMesh.rotation.y += 0.0003;
+      particlesMesh.rotation.z += 0.0001;
       
-      bigParticlesMesh.rotation.x -= 0.0002;
+      bigParticlesMesh.rotation.x -= 0.00015;
       bigParticlesMesh.rotation.y -= 0.0001;
       
       renderer.render(scene, camera);
@@ -704,17 +762,23 @@
     // Typed.js animation
     document.addEventListener('DOMContentLoaded', function() {
       const typed = new Typed('.typed-text', {
-        strings: ['RNA TEAM WELCOMES YOU', 'Explore our collection of books', 'Knowledge for everyone', 'JEE | NEET | Competitive Exams'],
+        strings: ['Your gateway to knowledge', 'Explore our collection of books', 'JEE | NEET | Competitive Exams', 'RNA TEAM WELCOMES YOU'],
         typeSpeed: 50,
         backSpeed: 30,
         loop: true,
         smartBackspace: true,
         showCursor: true,
-        cursorChar: '|'
+        cursorChar: '|',
+        shuffle: true
       });
       
       // Enter button functionality
       document.getElementById('enter-btn').addEventListener('click', function() {
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          this.style.transform = '';
+        }, 200);
+        
         document.getElementById('welcome-section').style.opacity = '0';
         document.getElementById('welcome-section').style.pointerEvents = 'none';
         
