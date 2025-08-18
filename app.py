@@ -13,9 +13,9 @@ ADMIN_PASSWORD = "admin123"
 BOOKS_FILE = "books.json"
 app.config['MAX_CONTENT_LENGTH'] = 300 * 1024 * 1024
 
-# 🔑 Internet Archive S3 Keys (आपके दिए हुए)
-ARCHIVE_ACCESS_KEY = "60QpJ1cMwMfWusNv"
-ARCHIVE_SECRET_KEY = "UQi7qlY7cJLc7Hdl"
+# 🔑 Archive.org S3 Keys (आपके दिए हुए)
+ARCHIVE_ACCESS_KEY = "SlbNJyVXJuDQOuY6"
+ARCHIVE_SECRET_KEY = "M0IV9EmiE0Uf6c3p"
 
 # Ensure uploads folder exists
 os.makedirs(BASE_FOLDER, exist_ok=True)
@@ -40,7 +40,9 @@ def allowed_file(filename, types):
 
 # ✅ Upload file to Internet Archive
 def upload_to_archive(file, category):
+    # Unique item ID (एक नया bucket जैसा)
     item_id = f"{category}_{int(datetime.datetime.utcnow().timestamp())}"
+
     url = f"https://s3.us.archive.org/{item_id}/{file.filename}"
 
     r = requests.put(
