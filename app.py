@@ -14,8 +14,8 @@ BOOKS_FILE = "books.json"
 app.config['MAX_CONTENT_LENGTH'] = 300 * 1024 * 1024
 
 # 🔑 Archive.org S3 Keys (आपके दिए हुए)
-ARCHIVE_ACCESS_KEY = "SlbNJyVXJuDQOuY6"
-ARCHIVE_SECRET_KEY = "M0IV9EmiE0Uf6c3p"
+ARCHIVE_ACCESS_KEY = "SlbNJyVXJuDQOuY6".strip()
+ARCHIVE_SECRET_KEY = "M0IV9EmiE0Uf6c3p".strip()
 
 # Ensure uploads folder exists
 os.makedirs(BASE_FOLDER, exist_ok=True)
@@ -40,7 +40,7 @@ def allowed_file(filename, types):
 
 # ✅ Upload file to Internet Archive
 def upload_to_archive(file, category):
-    # Unique item ID (एक नया bucket जैसा)
+    # Unique item ID
     item_id = f"{category}_{int(datetime.datetime.utcnow().timestamp())}"
 
     url = f"https://s3.us.archive.org/{item_id}/{file.filename}"
@@ -49,15 +49,21 @@ def upload_to_archive(file, category):
         url,
         data=file.stream,
         auth=(ARCHIVE_ACCESS_KEY, ARCHIVE_SECRET_KEY),
-        headers={"x-archive-auto-make-bucket": "1"}
+        headers={
+            "x-archive-auto-make-bucket": "1",
+            "Content-Type": "application/pdf"
+        }
     )
 
     if r.status_code not in (200, 201):
         raise Exception(f"Archive upload failed: {r.text}")
 
-    # Direct download/view link
-    link = f"https://archive.org/download/{item_id}/{file.filename}"
-    return link
+    # Links
+    direct_link = f"https://archive.org/download/{item_id}/{file.filename}"
+    details_link = f"https://archive.org/details/{item_id}"
+    embed_code = f'<iframe src="https://archive.org/embed/{item_id}" width="560" height="384" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen></iframe>'
+
+    return direct_link, details_link, embed_code
 
 @app.route('/', methods=['GET'])
 def home():
@@ -108,11 +114,13 @@ def upload_file():
     if doc and allowed_file(doc.filename, ALLOWED_DOC_EXTENSIONS):
         try:
             # ✅ Upload to Archive.org
-            link = upload_to_archive(doc, category)
+            direct_link, details_link, embed_code = upload_to_archive(doc, category)
 
             file_record = {
                 "file": doc.filename,
-                "direct_link": link,
+                "direct_link": direct_link,
+                "details_link": details_link,
+                "embed_code": embed_code,
                 "image": None
             }
 
@@ -146,7 +154,6 @@ def download_file(category, filename):
             if not link:
                 return "File link missing in record", 500
 
-            # ✅ Stream as attachment
             r = requests.get(link, stream=True)
             return Response(
                 r.iter_content(chunk_size=8192),
@@ -166,7 +173,6 @@ def view_file(category, filename):
             if not link:
                 return "File link missing in record", 500
 
-            # ✅ Stream inline (browser open)
             r = requests.get(link, stream=True)
             return Response(
                 r.iter_content(chunk_size=8192),
