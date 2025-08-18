@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, flash, session, Response
-import os, json, requests, datetime
+import os, json, requests, datetime, traceback
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
@@ -40,9 +40,7 @@ def allowed_file(filename, types):
 
 # ✅ Streaming Upload to Internet Archive
 def upload_to_archive(file, category):
-    # Unique item ID
     item_id = f"{category}_{int(datetime.datetime.utcnow().timestamp())}"
-
     url = f"https://s3.us.archive.org/{item_id}/{file.filename}"
 
     headers = {
@@ -55,18 +53,16 @@ def upload_to_archive(file, category):
         "Content-Type": "application/pdf"
     }
 
-    # ✅ Stream file content instead of loading in memory
+    # ✅ streaming: file.stream से सीधे भेजो
     r = requests.put(
         url,
-        data=file.stream,   # streaming upload
-        headers=headers,
-        stream=True
+        data=file.stream,
+        headers=headers
     )
 
     if r.status_code not in (200, 201):
         raise Exception(f"Archive upload failed: {r.text}")
 
-    # Links
     direct_link = f"https://archive.org/download/{item_id}/{file.filename}"
     details_link = f"https://archive.org/details/{item_id}"
     embed_code = f'<iframe src="https://archive.org/embed/{item_id}" width="560" height="384" frameborder="0" allowfullscreen></iframe>'
@@ -150,8 +146,10 @@ def upload_file():
 
             flash('✅ Book uploaded successfully!')
         except Exception as e:
-            print("Upload error:", str(e))
-            flash("❌ Upload error: " + str(e))
+            # ✅ Error log capture + browser पर show
+            error_msg = traceback.format_exc()
+            print("Upload error:", error_msg)
+            return f"<h3>❌ Internal Server Error</h3><pre>{error_msg}</pre>", 500
     else:
         flash('❌ Invalid book file')
 
