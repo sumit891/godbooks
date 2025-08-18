@@ -13,9 +13,9 @@ ADMIN_PASSWORD = "admin123"
 BOOKS_FILE = "books.json"
 app.config['MAX_CONTENT_LENGTH'] = 300 * 1024 * 1024
 
-# 🔑 Archive.org S3 Keys (आपके दिए हुए)
-ARCHIVE_ACCESS_KEY = "SlbNJyVXJuDQOuY6".strip()
-ARCHIVE_SECRET_KEY = "M0IV9EmiE0Uf6c3p".strip()
+# 🔑 Archive.org S3 Keys (new)
+ARCHIVE_ACCESS_KEY = "9A0i7CUUjQFnnIGX".strip()
+ARCHIVE_SECRET_KEY = "KPn5ws69o3W0cysa".strip()
 
 # Ensure uploads folder exists
 os.makedirs(BASE_FOLDER, exist_ok=True)
