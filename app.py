@@ -11,7 +11,7 @@ ALLOWED_IMG_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 ADMIN_PASSWORD = "admin123"
 
 BOOKS_FILE = "books.json"
-app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500 MB max
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  # ✅ 1 GB तक upload
 
 # 🔑 Archive.org IAS3 Keys
 ARCHIVE_ACCESS_KEY = "9A0i7CUUjQFnnIGX".strip()
@@ -38,7 +38,7 @@ books_data = load_books()
 def allowed_file(filename, types):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in types
 
-# ✅ Upload file to Internet Archive
+# ✅ Streaming Upload to Internet Archive
 def upload_to_archive(file, category):
     # Unique item ID
     item_id = f"{category}_{int(datetime.datetime.utcnow().timestamp())}"
@@ -55,11 +55,12 @@ def upload_to_archive(file, category):
         "Content-Type": "application/pdf"
     }
 
-    # ✅ Read file content (important to avoid corrupt PDF)
+    # ✅ Stream file content instead of loading in memory
     r = requests.put(
         url,
-        data=file.read(),
-        headers=headers
+        data=file.stream,   # streaming upload
+        headers=headers,
+        stream=True
     )
 
     if r.status_code not in (200, 201):
