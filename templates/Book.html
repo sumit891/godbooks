@@ -13,6 +13,7 @@
       --secondary: #4CAF50;
       --dark: #0f2027;
       --darker: #0a161a;
+      --glow: 0 0 10px rgba(0, 224, 255, 0.7);
     }
     
     * {
@@ -38,6 +39,7 @@
       text-align: center;
       position: relative;
       z-index: 2;
+      transition: all 0.8s cubic-bezier(0.65, 0, 0.35, 1);
     }
     
     #canvas-container {
@@ -56,13 +58,24 @@
       background: linear-gradient(90deg, #00e0ff, #4CAF50);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 20px rgba(0, 224, 255, 0.3);
+      text-shadow: 0 0 20px rgba(0, 224, 255, 0.5);
+      animation: glow 2s infinite alternate;
+    }
+    
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px rgba(0, 224, 255, 0.5);
+      }
+      to {
+        text-shadow: 0 0 20px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.6);
+      }
     }
     
     .typed-text {
       font-size: clamp(1rem, 3vw, 1.5rem);
-      color: rgba(255,255,255,0.8);
+      color: rgba(255,255,255,0.9);
       margin-bottom: 2rem;
+      text-shadow: 0 0 10px rgba(255,255,255,0.2);
     }
     
     .enter-btn {
@@ -73,29 +86,55 @@
       font-weight: 600;
       text-decoration: none;
       transition: all 0.3s ease;
-      box-shadow: 0 10px 20px rgba(0, 224, 255, 0.3);
+      box-shadow: 0 10px 20px rgba(0, 224, 255, 0.4), 0 0 15px rgba(0, 224, 255, 0.3);
       border: none;
       cursor: pointer;
       font-size: 1rem;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .enter-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+      z-index: -1;
     }
     
     .enter-btn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 15px 30px rgba(0, 224, 255, 0.4);
+      box-shadow: 0 15px 30px rgba(0, 224, 255, 0.5), 0 0 25px rgba(0, 224, 255, 0.4);
+    }
+    
+    .enter-btn:hover::before {
+      left: 100%;
     }
     
     header {
       padding: 1rem 2rem;
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(15, 32, 39, 0.8);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(10px);
       position: fixed;
       width: 100%;
       top: 0;
       z-index: 100;
-      box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(0, 224, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    header:hover {
+      background-color: rgba(15, 32, 39, 0.9);
+      box-shadow: 0 5px 40px rgba(0, 224, 255, 0.2);
     }
     
     nav a {
@@ -105,6 +144,7 @@
       font-weight: 500;
       transition: all 0.3s ease;
       position: relative;
+      padding: 5px 0;
     }
     
     nav a:hover {
@@ -116,9 +156,9 @@
       position: absolute;
       width: 0;
       height: 2px;
-      bottom: -5px;
+      bottom: 0;
       left: 0;
-      background-color: var(--primary);
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
       transition: width 0.3s ease;
     }
     
@@ -130,6 +170,14 @@
       margin-top: 80px;
       position: relative;
       z-index: 2;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    
+    .main-content.show {
+      opacity: 1;
+      transform: translateY(0);
     }
     
     .search-bar {
@@ -152,11 +200,13 @@
       backdrop-filter: blur(5px);
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
       transition: all 0.3s ease;
+      border: 1px solid rgba(0, 224, 255, 0.2);
     }
     
     .search-bar input:focus {
       background: rgba(255,255,255,0.2);
-      box-shadow: 0 5px 20px rgba(0, 224, 255, 0.3);
+      box-shadow: 0 5px 20px rgba(0, 224, 255, 0.4);
+      border: 1px solid rgba(0, 224, 255, 0.4);
     }
     
     .shelf {
@@ -172,6 +222,7 @@
       font-weight: 600;
       position: relative;
       display: inline-block;
+      text-shadow: 0 0 10px rgba(0, 224, 255, 0.3);
     }
     
     .shelf-title::after {
@@ -194,20 +245,39 @@
     
     .book {
       width: 180px;
-      background: rgba(30, 30, 30, 0.7);
+      background: rgba(30, 30, 30, 0.8);
       border: 2px solid rgba(0, 224, 255, 0.3);
       border-radius: 15px;
       padding: 15px;
       text-align: center;
       backdrop-filter: blur(5px);
-      transition: all 0.3s ease;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .book::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
     
     .book:hover {
-      transform: translateY(-10px);
+      transform: translateY(-10px) scale(1.03);
       border-color: var(--primary);
-      box-shadow: 0 15px 30px rgba(0, 224, 255, 0.2);
+      box-shadow: 0 15px 30px rgba(0, 224, 255, 0.3), 0 0 20px rgba(0, 224, 255, 0.2);
+    }
+    
+    .book:hover::before {
+      opacity: 0.3;
     }
     
     .book img {
@@ -216,7 +286,13 @@
       object-fit: cover;
       border-radius: 10px;
       margin-bottom: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+      transition: all 0.3s ease;
+    }
+    
+    .book:hover img {
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
     }
     
     .btn {
@@ -228,34 +304,49 @@
       text-decoration: none;
       font-weight: 600;
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
     
     .btn-view {
       background: var(--primary);
       color: #111;
+      box-shadow: 0 4px 10px rgba(0, 224, 255, 0.3);
     }
     
     .btn-view:hover {
       background: #00b8d4;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 224, 255, 0.4);
     }
     
     .btn-download {
       background: var(--secondary);
       color: white;
+      box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
     }
     
     .btn-download:hover {
       background: #3a923f;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
     }
     
     .upload-form {
       padding: 2rem;
       max-width: 800px;
       margin: 0 auto;
-      background: rgba(30, 30, 30, 0.7);
+      background: rgba(30, 30, 30, 0.8);
       border-radius: 15px;
-      backdrop-filter: blur(5px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      border: 1px solid rgba(0, 224, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .upload-form:hover {
+      box-shadow: 0 15px 40px rgba(0, 224, 255, 0.2);
+      border: 1px solid rgba(0, 224, 255, 0.4);
     }
     
     .upload-form label {
@@ -263,6 +354,7 @@
       margin-bottom: 10px;
       color: var(--primary);
       font-weight: 500;
+      text-shadow: 0 0 5px rgba(0, 224, 255, 0.3);
     }
     
     .upload-form select, 
@@ -271,9 +363,16 @@
       padding: 12px;
       margin-bottom: 15px;
       border-radius: 8px;
-      background: rgba(20, 20, 20, 0.7);
+      background: rgba(20, 20, 20, 0.8);
       border: 1px solid rgba(255,255,255,0.1);
       color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .upload-form select:focus, 
+    .upload-form input[type="file"]:focus {
+      border: 1px solid var(--primary);
+      box-shadow: 0 0 10px rgba(0, 224, 255, 0.3);
     }
     
     .upload-form button {
@@ -286,71 +385,137 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 224, 255, 0.3);
     }
     
     .upload-form button:hover {
       background: #00b8d4;
       transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 224, 255, 0.4);
     }
     
     .footer {
       padding: 2rem;
       text-align: center;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(15, 32, 39, 0.8);
       color: #aaa;
       margin-top: 3rem;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 224, 255, 0.2);
     }
     
     .footer a {
       color: var(--primary);
       text-decoration: none;
       font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
     }
     
-    .floating-books {
+    .footer a:hover {
+      color: white;
+      text-shadow: 0 0 10px rgba(0, 224, 255, 0.5);
+    }
+    
+    .footer a::after {
+      content: '';
       position: absolute;
-      width: 100px;
-      height: 100px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      opacity: 0.7;
-      animation: float 15s infinite ease-in-out;
+      width: 0;
+      height: 1px;
+      bottom: -2px;
+      left: 0;
+      background: var(--primary);
+      transition: width 0.3s ease;
     }
     
+    .footer a:hover::after {
+      width: 100%;
+    }
+    
+    /* Floating animation for books */
     @keyframes float {
       0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(5deg); }
+      50% { transform: translateY(-15px) rotate(3deg); }
     }
     
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .book {
-        width: 150px;
+        width: 160px;
       }
       
       nav a {
         margin-left: 1rem;
+        font-size: 0.9rem;
+      }
+      
+      header {
+        padding: 0.8rem 1rem;
       }
     }
     
     @media (max-width: 480px) {
       .book {
-        width: 130px;
+        width: 140px;
       }
       
       header {
         flex-direction: column;
-        padding: 1rem;
+        padding: 0.8rem;
       }
       
       nav {
-        margin-top: 1rem;
+        margin-top: 0.8rem;
       }
+      
+      nav a {
+        margin: 0 0.5rem;
+      }
+      
+      .shelf {
+        padding: 1rem;
+      }
+    }
+    
+    /* Preloader */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--darker);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+    
+    .preloader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(0, 224, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
+  <div class="preloader">
+    <div class="loader"></div>
+  </div>
+  
   <div id="canvas-container"></div>
   
   <div id="welcome-section">
@@ -359,7 +524,7 @@
     <button class="enter-btn" id="enter-btn">Explore Books</button>
   </div>
   
-  <div class="main-content" style="display:none;">
+  <div class="main-content">
     <header>
       <h1>📚 Study with RNA</h1>
       <nav>
@@ -433,34 +598,84 @@
   </div>
 
   <script>
-    // 3D Background Animation
+    // Preloader
+    window.addEventListener('load', function() {
+      const preloader = document.querySelector('.preloader');
+      setTimeout(() => {
+        preloader.classList.add('fade-out');
+      }, 1000);
+    });
+
+    // Enhanced 3D Background Animation
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ 
+      alpha: true, 
+      antialias: true,
+      powerPreference: "high-performance"
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    // Create floating particles
+    // Create floating particles with different colors
     const particlesGeometry = new THREE.BufferGeometry();
-    const particleCount = 500;
+    const particleCount = 1000;
     
     const posArray = new Float32Array(particleCount * 3);
+    const colorArray = new Float32Array(particleCount * 3);
+    
     for(let i = 0; i < particleCount * 3; i++) {
       posArray[i] = (Math.random() - 0.5) * 10;
+      
+      // Assign colors - mix of blue and green particles
+      if(i % 3 === 0) {
+        colorArray[i] = Math.random() * 0.5 + 0.5; // R (0.5-1.0)
+        colorArray[i+1] = Math.random() * 0.8 + 0.2; // G (0.2-1.0)
+        colorArray[i+2] = Math.random() * 0.5 + 0.5; // B (0.5-1.0)
+      } else {
+        colorArray[i] = Math.random() * 0.2; // R (0-0.2)
+        colorArray[i+1] = Math.random() * 0.5 + 0.5; // G (0.5-1.0)
+        colorArray[i+2] = Math.random() * 0.2; // B (0-0.2)
+      }
     }
     
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
     
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.02,
-      color: 0x00e0ff,
+      size: 0.03,
+      vertexColors: true,
       transparent: true,
       opacity: 0.8,
-      blending: THREE.AdditiveBlending
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true
     });
     
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
+
+    // Add some larger particles for depth
+    const bigParticlesGeometry = new THREE.BufferGeometry();
+    const bigParticleCount = 30;
+    
+    const bigPosArray = new Float32Array(bigParticleCount * 3);
+    for(let i = 0; i < bigParticleCount * 3; i++) {
+      bigPosArray[i] = (Math.random() - 0.5) * 15;
+    }
+    
+    bigParticlesGeometry.setAttribute('position', new THREE.BufferAttribute(bigPosArray, 3));
+    
+    const bigParticlesMaterial = new THREE.PointsMaterial({
+      size: 0.2,
+      color: 0x00e0ff,
+      transparent: true,
+      opacity: 0.6,
+      blending: THREE.AdditiveBlending
+    });
+    
+    const bigParticlesMesh = new THREE.Points(bigParticlesGeometry, bigParticlesMaterial);
+    scene.add(bigParticlesMesh);
 
     camera.position.z = 3;
 
@@ -468,8 +683,12 @@
     function animate() {
       requestAnimationFrame(animate);
       
-      particlesMesh.rotation.x += 0.0005;
-      particlesMesh.rotation.y += 0.0005;
+      particlesMesh.rotation.x += 0.0003;
+      particlesMesh.rotation.y += 0.0004;
+      particlesMesh.rotation.z += 0.0002;
+      
+      bigParticlesMesh.rotation.x -= 0.0002;
+      bigParticlesMesh.rotation.y -= 0.0001;
       
       renderer.render(scene, camera);
     }
@@ -485,16 +704,24 @@
     // Typed.js animation
     document.addEventListener('DOMContentLoaded', function() {
       const typed = new Typed('.typed-text', {
-        strings: ['RNA TEAM WELCOMES YOU', 'Explore our collection of books', 'Knowledge for everyone'],
+        strings: ['RNA TEAM WELCOMES YOU', 'Explore our collection of books', 'Knowledge for everyone', 'JEE | NEET | Competitive Exams'],
         typeSpeed: 50,
         backSpeed: 30,
-        loop: true
+        loop: true,
+        smartBackspace: true,
+        showCursor: true,
+        cursorChar: '|'
       });
       
       // Enter button functionality
       document.getElementById('enter-btn').addEventListener('click', function() {
-        document.getElementById('welcome-section').style.display = 'none';
-        document.querySelector('.main-content').style.display = 'block';
+        document.getElementById('welcome-section').style.opacity = '0';
+        document.getElementById('welcome-section').style.pointerEvents = 'none';
+        
+        setTimeout(() => {
+          document.getElementById('welcome-section').style.display = 'none';
+          document.querySelector('.main-content').classList.add('show');
+        }, 800);
         
         // Smooth scroll to top
         window.scrollTo({
