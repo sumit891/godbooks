@@ -45,14 +45,18 @@ def upload_to_archive(file, category):
 
     url = f"https://s3.us.archive.org/{item_id}/{file.filename}"
 
+    headers = {
+        "authorization": f"LOW {ARCHIVE_ACCESS_KEY}:{ARCHIVE_SECRET_KEY}",
+        "x-archive-auto-make-bucket": "1",
+        "x-archive-meta01-collection": "opensource",   # Recommended collection
+        "x-archive-meta-mediatype": "texts",           # PDFs = texts
+        "Content-Type": "application/pdf"
+    }
+
     r = requests.put(
         url,
         data=file.stream,
-        auth=(ARCHIVE_ACCESS_KEY, ARCHIVE_SECRET_KEY),
-        headers={
-            "x-archive-auto-make-bucket": "1",
-            "Content-Type": "application/pdf"
-        }
+        headers=headers
     )
 
     if r.status_code not in (200, 201):
@@ -61,7 +65,7 @@ def upload_to_archive(file, category):
     # Links
     direct_link = f"https://archive.org/download/{item_id}/{file.filename}"
     details_link = f"https://archive.org/details/{item_id}"
-    embed_code = f'<iframe src="https://archive.org/embed/{item_id}" width="560" height="384" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen></iframe>'
+    embed_code = f'<iframe src="https://archive.org/embed/{item_id}" width="560" height="384" frameborder="0" allowfullscreen></iframe>'
 
     return direct_link, details_link, embed_code
 
